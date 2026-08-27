@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vasudha</title>
+
+  <!-- our stylesheet (all the design/colours live here) -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- background sky gradient -->
+  <div class="scene"></div>
+
+  <!-- ============ 1. SPLASH SCREEN (name appears first) ============ -->
+  <div id="splash">
+    <div class="emblem">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 22V8M12 8c0-3 2-5 5-5-1 3-2 5-5 5zM12 10c0-3-2-5-5-5 1 3 2 5 5 5z"/>
+      </svg>
+    </div>
+    <h1>Vasu<b>dha</b></h1>
+    <div class="rule"></div>
+    <div class="tag">WHERE EVERY CLOUD SPEAKS, EVERY FIELD LISTENS</div>
+    <div class="begin">TAP TO BEGIN</div>
+  </div>
+
+  <!-- ============ 2. HOME PAGE (globe + name + buttons + field) ============ -->
+  <div id="home">
+
+    <!-- the rotating globe is drawn here by JavaScript -->
+    <canvas id="globe"></canvas>
+
+    <!-- top corners -->
+    <div class="topbar"><b>VASU</b><span>DHA</span></div>
+    <div class="topright">WHERE EVERY CLOUD SPEAKS, EVERY FIELD LISTENS</div>
+
+    <!-- centered name + tagline + buttons -->
+    <div class="hero">
+      <div class="k">GROW WITH THE SKY</div>
+      <div class="big">Vasudha</div>
+      <div class="sub">Weather that speaks to every field. Explore the world, then zoom into your farm.</div>
+
+      <div class="choose">
+        <div class="lbl">CHOOSE YOUR VIEW</div>
+        <div class="btns">
+          <div class="mode" onclick="enter('General')">
+            <span class="ic">🌍</span>
+            <div class="tx"><div class="t">General</div><div class="d">weather for everyone</div></div>
+          </div>
+          <div class="mode farm" onclick="enter('Farmer')">
+            <span class="ic">🌾</span>
+            <div class="tx"><div class="t">Farmer</div><div class="d">smart farm advice</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- foreground: paddy field + waving farmer -->
+    <div id="field">
+      <div class="ground"></div>
+
+      <!-- the farmer figure (arm with class "arm-wave" waves via CSS) -->
+      <svg class="farmer" viewBox="0 0 90 130">
+        <g fill="#14301a">
+          <path d="M45 60 q-4 0 -6 6 l-3 34 h6 l3-28 3 28 h6 l-3-34 q-2-6 -6-6z"/>
+          <path d="M39 62 q-9 6 -12 20 l5 2 q4-12 10-16z"/>
+        </g>
+        <circle cx="45" cy="46" r="9" fill="#e9c9a0"/>
+        <path d="M30 44 q15-12 30 0 q-15 6 -30 0z" fill="#c9992e"/>
+        <ellipse cx="45" cy="40" rx="9" ry="5" fill="#dcae3c"/>
+        <g class="arm-wave" fill="#14301a"><path d="M50 60 q12 -4 16 -20 l-5-2 q-4 13 -13 16z"/></g>
+        <circle cx="66" cy="36" r="3.4" fill="#e9c9a0"/>
+      </svg>
+
+      <!-- swaying paddy stalks are added here by JavaScript -->
+    </div>
+
+    <div class="scrollhint">DRAG THE SKY · PICK A VIEW TO ENTER</div>
+  </div>
+
+  <!-- ============ placeholder next stage (real app connects here later) ============ -->
+  <div id="stage">
+    <div class="box">
+      <h2 id="stageTitle"></h2>
+      <p>This is where the <b id="stageMode"></b> app will load next (India map → dashboard).</p>
+      <button onclick="backHome()">← Back</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- our JavaScript (all the behaviour/animation lives here) -->
+<script src="script.js"></script>
+</body>
+</html>
