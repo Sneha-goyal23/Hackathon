@@ -23,7 +23,6 @@ jobs:
       with:
         node-version: 20
 
-    # We use Cordova here because it builds perfectly without requiring interactive setup prompts
     - name: Wrap Web App with Cordova
       run: |
         npm install -g cordova
@@ -35,7 +34,7 @@ jobs:
         # Copy your HTML web files into Cordova's asset folder
         cp -R * mobileapp/www/ || true
         
-        # Build the Android project assets
+        # Add the Android platform
         cd mobileapp
         cordova platform add android
 
@@ -46,11 +45,11 @@ jobs:
         java-version: '17'
         cache: 'gradle'
 
-    - name: Build APK via Gradle
+    # We use Cordova's built-in build tool here to automatically locate and handle Gradle
+    - name: Build APK via Cordova
       run: |
-        cd "CLIMO-for webapp/CLIMO-project/mobileapp/platforms/android"
-        chmod +x gradlew
-        ./gradlew assembleDebug
+        cd "CLIMO-for webapp/CLIMO-project/mobileapp"
+        cordova build android --debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
