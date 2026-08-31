@@ -45,14 +45,13 @@ jobs:
         java-version: '17'
         cache: 'gradle'
 
-    # We use Cordova's built-in build tool here to automatically locate and handle Gradle
     - name: Build APK via Cordova
       run: |
-        cd "CLIM0-WEBAPP/CLIMO-project/mobileapp"
+        cd "CLIMO-WEBAPP/CLIMO-project/mobileapp"
         cordova build android --debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: climo-app-debug-apk
-        path: CLIM0-WEBAPP/CLIMO-project/mobileapp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        path: CLIMO-WEBAPP/CLIMO-project/mobileapp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
