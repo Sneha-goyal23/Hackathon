@@ -26,7 +26,7 @@ jobs:
     - name: Wrap Web App with Cordova
       run: |
         npm install -g cordova
-        cd "CLIMO/CLIMO-project"
+        cd "CLIMO-fixed/CLIMO-project"
         
         # Create a temporary cordova structure inside your project folder
         cordova create mobileapp com.climo.webapp "Climo App"
@@ -47,11 +47,11 @@ jobs:
 
     - name: Build APK via Cordova
       run: |
-        cd "CLIMO/CLIMO-project/mobileapp"
+        cd "CLIMO-fixed/CLIMO-project/mobileapp"
         cordova build android --debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: climo-app-debug-apk
-        path: CLIMO/CLIMO-project/mobileapp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        path: CLIMO-fixed/CLIMO-project/mobileapp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
