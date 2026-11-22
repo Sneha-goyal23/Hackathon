@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLIMO Gallery</title>
+<meta name="description" content="Screens from CLIMO, an all-India live weather and risk GIS: stations, heatmaps, choropleths, buffers, climate time machine, Weather Buddy and mobile.">
+<meta property="og:title" content="CLIMO Gallery: Know the sky, Own the day">
+<meta property="og:image" content="assets/gallery/02-landing-hero.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060a14; --bg2:#0a1426; --panel:#0f1a2e; --line:#1f3150; --line2:#2a4570;
+    --text:#e9ecf6; --muted:#9aa7c4; --faint:#5c6689;
+    --cyan:#2fe3c4; --blue:#2fa8ff; --amber:#f2a65a; --red:#e4573d; --violet:#8b7cf6;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(900px 500px at 85% -10%, rgba(47,168,255,.18), transparent 60%),
+      radial-gradient(700px 500px at -10% 30%, rgba(47,227,196,.10), transparent 60%),
+      linear-gradient(180deg, var(--bg), var(--bg2));}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;mask-image:radial-gradient(ellipse at 50% 0%,#000 20%,transparent 75%);}
+  .wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 16px}
+
+  /* ---------- header ---------- */
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
+  .brand svg{width:40px;height:40px;filter:drop-shadow(0 0 12px rgba(47,168,255,.45))}
+  .brand b{font:700 20px "Space Grotesk",sans-serif;letter-spacing:.5px}
+  .brand small{display:block;font:500 10px "JetBrains Mono",monospace;letter-spacing:2.5px;color:var(--muted)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1px solid var(--line2);color:var(--text);text-decoration:none;font:500 14px "Space Grotesk",sans-serif;background:rgba(15,26,46,.6);backdrop-filter:blur(8px);transition:border-color .2s,transform .2s}
+  .btn:hover{border-color:var(--cyan);transform:translateY(-1px)}
+  .btn.primary{background:linear-gradient(90deg,var(--blue),var(--cyan));border:0;color:#04121f;font-weight:700;box-shadow:0 8px 30px rgba(47,227,196,.25)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:56px 0 28px}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font:500 12px "JetBrains Mono",monospace;letter-spacing:3px;color:var(--cyan);text-transform:uppercase}
+  .eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{opacity:.25}}
+  h1{font:700 clamp(40px,7vw,84px)/1.0 "Space Grotesk",sans-serif;letter-spacing:-2px;margin:14px 0 10px}
+  h1 span{background:linear-gradient(90deg,var(--cyan),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{max-width:680px;color:var(--muted);font-size:17px;margin:0}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .stat{padding:8px 14px;border-radius:999px;border:1px solid var(--line2);background:rgba(15,26,46,.7);font-size:13px;color:#c5d2ea}
+  .stat b{font:700 14px "Space Grotesk",sans-serif;color:var(--cyan);margin-right:6px}
+
+  /* ---------- feature (gif) ---------- */
+  .feature{margin:30px 0 8px;border-radius:24px;overflow:hidden;border:1px solid var(--line2);position:relative;cursor:zoom-in;background:#000;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  .feature img{display:block;width:100%;height:auto}
+  .feature .tag{position:absolute;left:16px;top:16px;padding:6px 12px;border-radius:999px;background:rgba(6,10,20,.78);border:1px solid var(--line2);font:500 11px "JetBrains Mono",monospace;letter-spacing:2px;color:var(--amber)}
+  .feature figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 20px 16px;background:linear-gradient(transparent,rgba(4,8,16,.92));font-size:14px;color:#dbe4f7}
+  .feature figcaption b{font-family:"Space Grotesk",sans-serif}
+
+  /* ---------- filters ---------- */
+  .filters{position:sticky;top:0;z-index:5;display:flex;gap:8px;flex-wrap:wrap;padding:16px 0;margin-top:20px;background:linear-gradient(var(--bg) 70%,transparent)}
+  .chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line2);background:var(--panel);color:var(--muted);font:500 13px "Space Grotesk",sans-serif;cursor:pointer;transition:all .2s}
+  .chip:hover{color:var(--text)}
+  .chip[aria-pressed="true"]{color:#04121f;background:var(--cyan);border-color:var(--cyan)}
+  .chip .n{opacity:.6;margin-left:4px;font-family:"JetBrains Mono",monospace;font-size:11px}
+
+  /* ---------- grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;padding-bottom:40px}
+  .card{grid-column:span 6;position:relative;border-radius:var(--radius);overflow:hidden;background:var(--panel);border:1px solid var(--line);cursor:zoom-in;
+        transform:translateY(16px);opacity:0;transition:transform .6s cubic-bezier(.2,.7,.2,1),opacity .6s,border-color .25s,box-shadow .25s}
+  .card.in{transform:none;opacity:1}
+  .card:hover{border-color:var(--line2);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(47,227,196,.15)}
+  .card.wide{grid-column:span 12}
+  .card.phone{grid-column:span 3}
+  .card .media{aspect-ratio:16/10;overflow:hidden;background:#000}
+  .card.phone .media{aspect-ratio:9/18.5}
+  .card img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+  .card:hover img{transform:scale(1.04)}
+  .card .meta{padding:14px 16px 16px}
+  .card .k{font:500 10.5px "JetBrains Mono",monospace;letter-spacing:2px;text-transform:uppercase}
+  .card h3{margin:4px 0 4px;font:700 18px "Space Grotesk",sans-serif}
+  .card p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.5}
+  .card .num{position:absolute;top:12px;right:12px;font:500 11px "JetBrains Mono",monospace;padding:4px 9px;border-radius:999px;background:rgba(6,10,20,.75);border:1px solid var(--line2);color:var(--muted)}
+  .card.hide{display:none}
+  .k.arrival{color:var(--amber)} .k.observe{color:var(--blue)} .k.gis{color:var(--cyan)} .k.time{color:var(--violet)} .k.alert{color:var(--red)} .k.mobile{color:#4ade80}
+  @media (max-width:900px){ .card{grid-column:span 12} .card.phone{grid-column:span 6} }
+  @media (max-width:480px){ .card.phone{grid-column:span 12} .card.phone .media{aspect-ratio:9/16} }
+
+  /* ---------- lightbox ---------- */
+  .lb{position:fixed;inset:0;z-index:50;display:none;background:rgba(3,6,12,.94);backdrop-filter:blur(10px)}
+  .lb.open{display:grid;grid-template-rows:auto 1fr auto}
+  .lb-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;font:500 12px "JetBrains Mono",monospace;color:var(--muted);letter-spacing:1.5px}
+  .lb-stage{position:relative;display:flex;align-items:center;justify-content:center;padding:0 64px;min-height:0}
+  .lb-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;border:1px solid var(--line2);box-shadow:0 30px 90px rgba(0,0,0,.7);animation:pop .35s cubic-bezier(.2,.7,.2,1)}
+  @keyframes pop{from{opacity:0;transform:scale(.97)}}
+  .lb-cap{padding:14px 16px 22px;text-align:center;max-width:860px;margin:0 auto}
+  .lb-cap h3{margin:0 0 4px;font:700 20px "Space Grotesk",sans-serif}
+  .lb-cap p{margin:0;color:var(--muted);font-size:14px}
+  .nav,.close{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid var(--line2);background:rgba(15,26,46,.85);color:var(--text);font-size:20px;cursor:pointer;display:grid;place-items:center;transition:border-color .2s}
+  .nav:hover,.close:hover{border-color:var(--cyan)}
+  .nav.prev{left:10px}.nav.next{right:10px}
+  .close{position:static;transform:none;width:38px;height:38px;font-size:16px}
+  @media (max-width:640px){ .lb-stage{padding:0 8px} .nav{top:auto;bottom:-4px;transform:none} .nav.prev{left:16px} .nav.next{right:16px} }
+
+  footer{position:relative;z-index:1;border-top:1px solid var(--line);margin-top:20px;padding:28px 0 40px;color:var(--faint);font-size:13px;text-align:center}
+  footer a{color:var(--muted)}
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} .card{opacity:1;transform:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="../index.html" aria-label="Open CLIMO">
+      <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" fill="#0f2a44"/>
+        <circle cx="20" cy="12" r="5.5" fill="#FFD54F"/>
+        <ellipse cx="17" cy="15" rx="3.5" ry="2.5" fill="#E3F2FD"/><ellipse cx="22" cy="14" rx="3.8" ry="2.8" fill="#E3F2FD"/><ellipse cx="19.5" cy="16.5" rx="4.5" ry="2" fill="#E3F2FD"/>
+        <path d="M8 24 Q12 18 16 22 Q20 17 24 21 Q28 19 32 24 L32 26 Q28 28 24 26 Q20 28 16 26 Q12 28 8 26 Z" fill="#66BB6A"/>
+        <path d="M8 26 Q12 24 16 26 Q20 24 24 26 Q28 24 32 26 L32 34 Q20 40 8 34 Z" fill="#2196F3"/>
+      </svg>
+      <span><b>CLIMO</b><small>GALLERY</small></span>
+    </a>
+    <nav class="actions">
+      <a class="btn" href="https://github.com/chakrabortysohini2005-stack/Web-Mobile-Application-CLIMO">★ Repository</a>
+      <a class="btn primary" href="../index.html">Launch app →</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow"><i></i>Live weather · Risk GIS · All India</div>
+    <h1>Know the sky,<br><span>Own the day.</span></h1>
+    <p class="lede">A tour of CLIMO, a zero-backend weather and risk GIS for India. These are real screenshots of the app running on live Open-Meteo data. Click any image to open it full screen; use ← → to browse.</p>
+    <div class="stats">
+      <span class="stat"><b>90</b>stations</span>
+      <span class="stat"><b>33</b>states &amp; UTs</span>
+      <span class="stat"><b>16</b>languages</span>
+      <span class="stat"><b>2000–2030</b>climate time machine</span>
+      <span class="stat"><b>0</b>servers</span>
+    </div>
+  </section>
+
+  <figure class="feature" data-index="0" tabindex="0">
+    <span class="tag">● ANIMATED · 2000 → 2030</span>
+    <img src="assets/climate-timelapse.gif" alt="Animated time-lapse of the 2000 to 2030 temperature heatmap across India">
+    <figcaption><b>Climate time machine.</b> The year slider sweeps three decades of station temperatures. Years after 2025 come from an LSTM forecast.</figcaption>
+  </figure>
+
+  <div class="filters" role="toolbar" aria-label="Filter screenshots" id="filters"></div>
+  <main class="grid" id="grid"></main>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
+  <div class="lb-top"><span id="lbCount">1 / 1</span><button class="close" id="lbClose" aria-label="Close">✕</button></div>
+  <div class="lb-stage">
+    <button class="nav prev" id="lbPrev" aria-label="Previous">←</button>
+    <img id="lbImg" alt="">
+    <button class="nav next" id="lbNext" aria-label="Next">→</button>
+  </div>
+  <div class="lb-cap"><h3 id="lbTitle"></h3><p id="lbText"></p></div>
+</div>
+
+<footer class="wrap">
+  CLIMO · Know the sky, Own the day · Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · Imagery © Esri · Weather by <a href="https://open-meteo.com/">Open-Meteo</a>
+</footer>
+
+<script>
+(function(){
+  const G = 'assets/gallery/';
+  const ITEMS = [
+    {src:'assets/climate-timelapse.gif', cat:'time', k:'Time machine', t:'Climate time-lapse 2000 → 2030', d:'Station temperatures across three decades. Years after 2025 come from an LSTM forecast.', feature:true},
+    {src:G+'02-landing-hero.jpg', cat:'arrival', k:'Arrival', t:'Landing hero', d:'A glowing, dotted 3D India with data-flow arcs between metros, orbit rings and a sun badge. Tilts toward your cursor.', size:'wide'},
+    {src:G+'01-splash.jpg', cat:'arrival', k:'Arrival', t:'Splash screen', d:'The CLIMO mark (sun, cloud, land, water) on a twinkling starfield. Moves on after 2.6 s.'},
+    {src:G+'03-landing-features.jpg', cat:'arrival', k:'Arrival', t:'What CLIMO tracks', d:'Temperature, rainfall, humidity, wind, heat maps, buffer zones and alerts.'},
+    {src:G+'04-dashboard-stations.jpg', cat:'observe', k:'Observatory', t:'90 live stations', d:'Clustered AWS, radar, rain-gauge and river-gauge stations, with top alerts ranked live in the sidebar.', size:'wide'},
+    {src:G+'05-station-drawer.jpg', cat:'observe', k:'Observatory', t:'Station drawer', d:'Mumbai (Colaba): hourly strip, 7-day forecast, live readings and flood-risk score.'},
+    {src:G+'13-satellite.jpg', cat:'observe', k:'Observatory', t:'Satellite basemap', d:'Esri World Imagery with the station network on top.'},
+    {src:G+'07-state-choropleth.jpg', cat:'gis', k:'GIS analysis', t:'State-level choropleth', d:'Live temperature for each state from one batched API call. India is masked and wind particles drift across.', size:'wide'},
+    {src:G+'06-risk-heatmap.jpg', cat:'gis', k:'GIS analysis', t:'Live heatmap', d:'Station temperatures blended into a continuous field with Leaflet.heat.'},
+    {src:G+'08-buffer-analysis.jpg', cat:'gis', k:'GIS analysis', t:'Buffer analysis', d:'5/10/15/20 km rings around Guwahati with a live risk score and station overlap.'},
+    {src:G+'11-climate-2030.jpg', cat:'time', k:'Time & intelligence', t:'Weather Time Explorer', d:'48 h history plus 10-day forecast on top, and the 2000–2030 climate slider at 2030 below.'},
+    {src:G+'10-weather-buddy.jpg', cat:'time', k:'Time & intelligence', t:'Weather Buddy', d:'"Will it rain in Kolkata tomorrow?" Rule-based: finds the place and time, then answers from the live forecast.'},
+    {src:G+'14-alerts.jpg', cat:'alert', k:'Alerts & inclusion', t:'Alert notification', d:'Watch your nearest station, choose a threshold, get browser notifications, or simulate an alert.'},
+    {src:G+'12-multilingual.jpg', cat:'alert', k:'Alerts & inclusion', t:'16 Indian languages', d:'The whole interface switches live (here in Hindi) over a rainfall heatmap.'},
+    {src:G+'17-mobile-landing.jpg', cat:'mobile', k:'Mobile', t:'Landing', d:'The hero reflows into a single column.', size:'phone'},
+    {src:G+'15-mobile-map.jpg', cat:'mobile', k:'Mobile', t:'Map', d:'The top bar wraps and the time explorer docks at the bottom.', size:'phone'},
+    {src:G+'16-mobile-layers.jpg', cat:'mobile', k:'Mobile', t:'Layers drawer', d:'The sidebar slides in from the ☰ button.', size:'phone'},
+    {src:G+'18-mobile-buddy.jpg', cat:'mobile', k:'Mobile', t:'Weather Buddy', d:'"Should I go outside in Delhi?"', size:'phone'}
+  ];
+  const CATS = [['all','All'],['arrival','Arrival'],['observe','Observatory'],['gis','GIS analysis'],['time','Time & intelligence'],['alert','Alerts & inclusion'],['mobile','Mobile']];
+
+  const grid = document.getElementById('grid'), filters = document.getElementById('filters');
+  const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  ITEMS.forEach((it, i) => {
+    if (it.feature) return;
+    const el = document.createElement('figure');
+    el.className = 'card' + (it.size ? ' ' + it.size : '');
+    el.dataset.cat = it.cat; el.dataset.index = i; el.tabIndex = 0;
+    el.innerHTML = `<div class="media"><img loading="lazy" src="${it.src}" alt="${esc(it.t)}"></div>
+      <span class="num">${String(i).padStart(2,'0')}</span>
+      <figcaption class="meta"><div class="k ${it.cat}">${esc(it.k)}</div><h3>${esc(it.t)}</h3><p>${esc(it.d)}</p></figcaption>`;
+    grid.appendChild(el);
+  });
+
+  CATS.forEach(([key, label], i) => {
+    const n = key === 'all' ? ITEMS.length - 1 : ITEMS.filter(x => x.cat === key && !x.feature).length;
+    const b = document.createElement('button');
+    b.className = 'chip'; b.type = 'button'; b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.innerHTML = `${label}<span class="n">${n}</span>`;
+    b.onclick = () => {
+      filters.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      grid.querySelectorAll('.card').forEach(c => c.classList.toggle('hide', key !== 'all' && c.dataset.cat !== key));
+    };
+    filters.appendChild(b);
+  });
+
+  // reveal on scroll
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), {rootMargin:'0px 0px -40px'}) : null;
+  grid.querySelectorAll('.card').forEach(c => io ? io.observe(c) : c.classList.add('in'));
+
+  // lightbox
+  const lb = document.getElementById('lb'), img = document.getElementById('lbImg');
+  let cur = 0, order = [];
+  function visibleOrder(){
+    const ids = [0].concat([...grid.querySelectorAll('.card:not(.hide)')].map(c => +c.dataset.index));
+    return [...new Set(ids)];
+  }
+  function show(i){
+    cur = i; const it = ITEMS[order[cur]];
+    img.src = it.src; img.alt = it.t;
+    img.style.animation = 'none'; void img.offsetWidth; img.style.animation = '';
+    document.getElementById('lbTitle').textContent = it.t;
+    document.getElementById('lbText').textContent = it.d;
+    document.getElementById('lbCount').textContent = `${String(cur+1).padStart(2,'0')} / ${String(order.length).padStart(2,'0')} · ${it.k.toUpperCase()}`;
+  }
+  function open(idx){ order = visibleOrder(); lb.classList.add('open'); document.body.style.overflow = 'hidden'; show(Math.max(0, order.indexOf(idx))); }
+  function close(){ lb.classList.remove('open'); document.body.style.overflow = ''; }
+  const step = d => show((cur + d + order.length) % order.length);
+
+  document.querySelectorAll('[data-index]').forEach(el => {
+    el.addEventListener('click', () => open(+el.dataset.index));
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(+el.dataset.index); } });
+  });
+  document.getElementById('lbPrev').onclick = () => step(-1);
+  document.getElementById('lbNext').onclick = () => step(1);
+  document.getElementById('lbClose').onclick = close;
+  lb.addEventListener('click', e => { if (e.target === lb || e.target.classList.contains('lb-stage')) close(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close(); else if (e.key === 'ArrowRight') step(1); else if (e.key === 'ArrowLeft') step(-1);
+  });
+  let x0 = null;
+  lb.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); x0 = null; });
+})();
+</script>
+</body>
+</html>
