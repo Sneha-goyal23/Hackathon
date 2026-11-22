@@ -3,6 +3,10 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Dates are taken from the git history.
 
 ## [Unreleased]
+### Fixed
+- **`computeRisk()` read the wrong time windows.** Its “trailing” 24 h and 6 h rain sums were taken from the end of a 12-day hourly series, which is the last *forecast* day, about 10 days ahead. Its precipitation probability came from two days ago. Both now anchor to the current hour and today. This affects searched places, map clicks, My Location, buffer insights and Weather Buddy. On a same-day sample, 37 of 91 locations changed score and 3 changed risk band.
+- The weather-safe route samples and the state-level “Rainfall · last 24 h” choropleth now sum the trailing 24 h up to the current hour, in IST, instead of the full current (UTC) day including forecast hours.
+
 ### Added
 - Full project documentation: a redesigned README with an animated banner, a 22-image gallery, a 2000→2030 timelapse GIF and a risk-model infographic. Also `docs/` (User Guide, Architecture, Methodology, Data Sources, Deployment, Gallery and an interactive `gallery.html`), plus CONTRIBUTING, SECURITY, issue and PR templates.
 

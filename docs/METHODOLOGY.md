@@ -54,13 +54,15 @@ This index is used for **ad-hoc locations**: searched places, map clicks, *My Lo
 |---|---:|---|---|
 | 24 h rainfall | **45** | ÷ 75 mm | Antecedent soil saturation and drainage load |
 | 6 h rainfall | **25** | ÷ 35 mm | Flash-flood and urban waterlogging pulse |
-| Precipitation probability (daily max, *intended* as today) | **15** | ÷ 80 % | Rain that is likely but has not fallen yet |
+| Precipitation probability (today's daily max) | **15** | ÷ 80 % | Rain that is likely but has not fallen yet |
 | Current precipitation intensity | **10** | ÷ 8 mm/h | Is it pouring right now? |
 | Storm signal (WMO code) | **5** | 95/96/99 → 1 · 80–82 → 0.5 · else 0 | Convective thunderstorms and showers |
 
 $$
 S = \operatorname{clamp}_{0}^{100}\Big(\operatorname{round}\big(45\,r_{24} + 25\,r_{6} + 10\,r_{now} + 15\,p + 5\,s\big)\Big)
 $$
+
+Both rain windows **end at the current hour**. `currentHourIndex()` finds that hour from Open-Meteo's own `current.time`, which is in the same timezone as the hourly timestamps. The probability comes from **today's** entry in `daily.time`. This matters because the hourly series also contains up to 10 days of forecast.
 
 The function also returns `rainfall24h`, `rainfall6h`, `rainProbability` and `currentRain` for display.
 
@@ -119,7 +121,7 @@ flowchart TD
 ```
 
 Key details:
-- **Sample score:** `min(100, round(Σ24h / 75 mm × 100))`, the same scale as the live station score.
+- **Sample score:** `min(100, round(Σ24h / 75 mm × 100))` over the **trailing 24 h up to the current hour** (IST), the same scale as the live station score. Rain that is only forecast for later today is not counted.
 - **Corridor filter:** a high-risk station only counts if it lies within **40 km** of some sample point. Without this, a storm on the other side of India would distort the request.
 - **Circle → polygon:** `circleToRing()` builds 16 vertices using 110.574 km per degree of latitude and 111.320·cos φ km per degree of longitude.
 - **No-op detection:** ORS silently returns the same path when no detour exists. CLIMO treats a change under 500 m as “no alternative” rather than claiming a safe route.
@@ -130,7 +132,7 @@ Key details:
 
 1. Load the state and UT polygons from `geojson-india@0.0.2`, and compute each polygon's centre.
 2. Make **one** Open-Meteo request with comma-separated latitudes and longitudes for every centre. This avoids a burst of 429 errors.
-3. Store `temperature`, `humidity`, `wind`, `rainfall24h` (Σ of the last 24 hourly values), `feels`, `windDir`, `tmax` and `tmin` per state.
+3. Store `temperature`, `humidity`, `wind`, `rainfall24h` (Σ of the trailing 24 hourly values up to the current hour), `feels`, `windDir`, `tmax` and `tmin` per state.
 4. Colour each state by linear interpolation between ramp stops:
 
 | Parameter | Domain | Ramp |
@@ -203,12 +205,10 @@ The assistant is fully local and has no LLM. `executeGISCommand()` routes each q
 
 | # | Limitation | Impact | Suggested fix |
 |---|---|---|---|
-| 1 | **The 24 h window in `computeRisk()` is the tail of the hourly array.** The station series runs from 2 days ago to 10 days ahead, so `slice(-24)` reads the **last forecast day**, not the trailing 24 h. The 6 h term has the same problem. Similarly, `daily.precipitation_probability_max[0]` is the day **two days ago** (because of `past_days=2`), not today. | The multi-factor index for searched places can reflect rain about 10 days out. The live station score (section 2) is **not** affected. | Slice up to the current-hour index, as `updateAtTimeIndex()` already does. |
-| 2 | **Route samples use UTC “today”.** `past_days=1&forecast_days=1&timezone=UTC` and then `slice(-24)` reads the full current UTC day, which includes future hours. | Mixes observed and forecast rain along the route | Request `timezone=Asia/Kolkata` and slice around the current hour |
-| 3 | Data is fetched **once** at boot | A tab left open for a long time drifts toward forecast values | Re-fetch on the 5-minute tick, or with a staleness check |
-| 4 | Model data, not gauges | Values come from Open-Meteo's model blend, not IMD instruments | Integrate IMD AWS feeds where licensing allows |
-| 5 | Rain-only hazard | No river stage, DEM, soil or drainage data | Add slope, flow accumulation or river-gauge feeds |
-| 6 | Feedback is not shared | Posts live only in the current page | A small backend or a realtime store |
-| 7 | The ORS key is in client JS | It can be copied and its quota used up | Use a serverless proxy (see [SECURITY.md](../SECURITY.md)) |
+| 1 | Data is fetched **once** at boot | A tab left open for a long time drifts toward forecast values | Re-fetch on the 5-minute tick, or with a staleness check |
+| 2 | Model data, not gauges | Values come from Open-Meteo's model blend, not IMD instruments | Integrate IMD AWS feeds where licensing allows |
+| 3 | Rain-only hazard | No river stage, DEM, soil or drainage data | Add slope, flow accumulation or river-gauge feeds |
+| 4 | Feedback is not shared | Posts live only in the current page | A small backend or a realtime store |
+| 5 | The ORS key is in client JS | It can be copied and its quota used up | Use a serverless proxy (see [SECURITY.md](../SECURITY.md)) |
 
 > ⚠️ **Disclaimer.** CLIMO is a research and educational tool. Its scores are screening indicators, not official forecasts or warnings. Follow **IMD** and **NDMA** advisories.

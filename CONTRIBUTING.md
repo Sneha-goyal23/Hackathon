@@ -69,7 +69,7 @@ Append to `INDIA_STATIONS`:
 
 ## 💡 Good first issues
 
-- Fix the `computeRisk()` window so it slices up to “now” (see [METHODOLOGY §10](docs/METHODOLOGY.md#10-limitations-and-known-issues))
+- Re-fetch station data on the 5-minute tick, not only at boot (see [METHODOLOGY §10](docs/METHODOLOGY.md#10-limitations-and-known-issues))
 - Add SRI hashes to the CDN tags
 - Add a PWA manifest and offline tile caching
 - Add unit tests for `computeRisk()`, `parseIST()` and `circleToRing()`
