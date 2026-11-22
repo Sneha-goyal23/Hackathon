@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔐 Report a security vulnerability
+    url: https://github.com/chakrabortysohini2005-stack/Web-Mobile-Application-CLIMO/security/advisories/new
+    about: Please report security issues privately.
+  - name: 📖 Read the User Guide
+    url: https://github.com/chakrabortysohini2005-stack/Web-Mobile-Application-CLIMO/blob/main/docs/USER_GUIDE.md
+    about: Many questions are answered in the guide's FAQ.

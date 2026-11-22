@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 520" width="1280" height="520" role="img" aria-label="CLIMO flood-risk screening index: weighted blend of 24h rain 45%, 6h rain 25%, precipitation probability 15%, current intensity 10%, storm signal 5%; bands Low 0-33, Moderate 34-65, High 66-100.">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#060d1d"/><stop offset="1" stop-color="#0b2038"/></linearGradient>
+<linearGradient id="band" x1="0" x2="1"><stop offset="0" stop-color="#4ade80"/><stop offset=".33" stop-color="#4ade80"/><stop offset=".34" stop-color="#f2a65a"/><stop offset=".65" stop-color="#f2a65a"/><stop offset=".66" stop-color="#e4573d"/><stop offset="1" stop-color="#e4573d"/></linearGradient>
+<linearGradient id="shine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<clipPath id="bandClip"><rect x="60" y="420" width="1160" height="26" rx="13"/></clipPath>
+<style>
+.t{font:700 30px "Space Grotesk","Segoe UI",system-ui,sans-serif;fill:#f3f8ff}
+.s{font:500 15px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#8fb3d6;letter-spacing:1.5px}
+.pct{font:800 26px "Space Grotesk","Segoe UI",system-ui,sans-serif;fill:#04101f}
+.ln{font:600 16px "Segoe UI",system-ui,sans-serif;fill:#e6efff}
+.lc{font:500 13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#7f9bbb}
+.bl{font:700 14px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:1px}
+.sh{animation:sh 3.5s ease-in-out infinite}
+@keyframes sh{0%{transform:translateX(-300px)}100%{transform:translateX(1400px)}}
+.needle{animation:nd 6s ease-in-out infinite}
+@keyframes nd{0%,100%{transform:translateX(220px)}50%{transform:translateX(860px)}}
+</style></defs>
+<rect width="1280" height="520" rx="22" fill="url(#bg)"/>
+<text x="60" y="70" class="s">CLIMO · computeRisk()</text>
+<text x="60" y="112" class="t">Flood-risk screening index  →  score 0–100</text>
+<rect x="60.0" y="150" width="518.0" height="64" rx="10" fill="#2fa8ff"/><text x="319.0" y="192" text-anchor="middle" class="pct">45%</text><rect x="582.0" y="150" width="286.0" height="64" rx="10" fill="#2fe3c4"/><text x="725.0" y="192" text-anchor="middle" class="pct">25%</text><rect x="872.0" y="150" width="170.0" height="64" rx="10" fill="#8b7cf6"/><text x="957.0" y="192" text-anchor="middle" class="pct">15%</text><rect x="1046.0" y="150" width="112.0" height="64" rx="10" fill="#5b8def"/><text x="1102.0" y="192" text-anchor="middle" class="pct">10%</text><rect x="1162.0" y="150" width="54.0" height="64" rx="10" fill="#ffd54f"/><text x="1189.0" y="192" text-anchor="middle" class="pct">5%</text>
+<line x1="319.0" y1="218" x2="319.0" y2="234" stroke="#2fa8ff" stroke-opacity=".6"/><text x="319.0" y="252" text-anchor="middle" class="ln">24h rainfall</text><text x="319.0" y="272" text-anchor="middle" class="lc">÷ 75 mm</text><line x1="725.0" y1="218" x2="725.0" y2="234" stroke="#2fe3c4" stroke-opacity=".6"/><text x="725.0" y="252" text-anchor="middle" class="ln">6h rainfall</text><text x="725.0" y="272" text-anchor="middle" class="lc">÷ 35 mm</text><line x1="957.0" y1="218" x2="957.0" y2="234" stroke="#8b7cf6" stroke-opacity=".6"/><text x="957.0" y="252" text-anchor="middle" class="ln">Precip. probability</text><text x="957.0" y="272" text-anchor="middle" class="lc">÷ 80 %</text><line x1="1102.0" y1="218" x2="1102.0" y2="282" stroke="#5b8def" stroke-opacity=".6"/><text x="1110" y="300" text-anchor="end" class="ln">Current intensity</text><text x="1110" y="320" text-anchor="end" class="lc">÷ 8 mm/h</text><line x1="1189.0" y1="218" x2="1189.0" y2="334" stroke="#ffd54f" stroke-opacity=".6"/><text x="1214" y="352" text-anchor="end" class="ln">Storm signal</text><text x="1214" y="372" text-anchor="end" class="lc">WMO 95/96/99</text>
+<text x="60" y="404" class="s">RISK BANDS · RISK_THRESHOLDS</text>
+<g clip-path="url(#bandClip)"><rect x="60" y="420" width="1160" height="26" fill="url(#band)"/><rect class="sh" x="0" y="420" width="220" height="26" fill="url(#shine)"/></g>
+<g class="needle"><path d="M60 410 l8 -12 h-16z" fill="#f3f8ff"/></g>
+<text x="60" y="476" class="bl" fill="#4ade80">LOW  0–33</text>
+<text x="454" y="476" class="bl" fill="#f2a65a">MODERATE  34–65</text>
+<text x="826" y="476" class="bl" fill="#e4573d">HIGH  66–100</text>
+<text x="1220" y="70" text-anchor="end" class="lc">each input normalised &amp; capped at 1.0</text>
+</svg>

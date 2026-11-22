@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CLIMO Gallery</title>
+<meta name="description" content="Screens from CLIMO, a live all-India weather and risk GIS." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050b1a; --bg2:#0a1a33; --card:#0d1d36; --line:rgba(143,224,255,.14);
+    --text:#eaf2ff; --muted:#8fb3d6; --teal:#2fe3c4; --blue:#2fa8ff; --sun:#ffd54f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%,rgba(47,168,255,.18),transparent 60%),
+               radial-gradient(900px 500px at -10% 110%,rgba(47,227,196,.12),transparent 60%),
+               linear-gradient(160deg,var(--bg),var(--bg2));
+    background-attachment:fixed;
+    color:var(--text); font-family:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:40px 16px 80px}
+  header{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+  .eyebrow{font:600 12px "JetBrains Mono",ui-monospace,monospace;letter-spacing:4px;color:var(--teal);display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 12px var(--teal);animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{opacity:.3}}
+  h1{margin:0;font-size:clamp(40px,7vw,84px);letter-spacing:4px;line-height:1}
+  h1 span{background:linear-gradient(90deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);max-width:720px;line-height:1.55;margin:0}
+  .sub a{color:var(--teal)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 26px}
+  .chip{font:600 12px "JetBrains Mono",ui-monospace,monospace;letter-spacing:1px;text-transform:uppercase;color:var(--muted);
+        background:rgba(13,29,54,.8);border:1px solid var(--line);padding:9px 14px;border-radius:999px;cursor:pointer;transition:.2s}
+  .chip:hover{color:var(--text);border-color:rgba(47,227,196,.5)}
+  .chip[aria-pressed="true"]{color:#04101f;background:linear-gradient(90deg,var(--teal),var(--blue));border-color:transparent}
+  .hero{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);margin-bottom:22px;background:#000}
+  .hero img{display:block;width:100%;height:auto}
+  .grid{columns:3 340px;column-gap:18px}
+  .tile{break-inside:avoid;margin:0 0 18px;border-radius:18px;overflow:hidden;background:var(--card);border:1px solid var(--line);
+        cursor:zoom-in;position:relative;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .35s;
+        animation:rise .6s both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}}
+  .tile:hover,.tile:focus-visible{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 0 1px rgba(47,227,196,.35);outline:none}
+  .tile img{display:block;width:100%;height:auto}
+  .cap{padding:12px 14px 14px}
+  .cap b{display:block;font-size:15px}
+  .cap small{color:var(--muted);font-size:12.5px;line-height:1.45;display:block;margin-top:4px}
+  .tag{position:absolute;top:10px;right:10px;font:600 10px "JetBrains Mono",ui-monospace,monospace;letter-spacing:1.5px;text-transform:uppercase;
+       background:rgba(5,11,26,.78);border:1px solid var(--line);color:var(--teal);padding:5px 8px;border-radius:8px;backdrop-filter:blur(6px)}
+  .hidden{display:none}
+  /* lightbox */
+  .lb{position:fixed;inset:0;background:rgba(3,7,16,.92);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .lb.open{display:flex}
+  .lb figure{margin:0;max-width:min(1400px,100%);max-height:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .lb img{width:auto;height:auto;max-width:100%;max-height:calc(100vh - 140px);object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#000}
+  .lb figcaption{text-align:center;color:var(--muted);font-size:14px}
+  .lb figcaption b{color:var(--text)}
+  .lb button{position:absolute;background:rgba(13,29,54,.9);border:1px solid var(--line);color:var(--text);width:46px;height:46px;border-radius:50%;
+             font-size:20px;cursor:pointer}
+  .lb .x{top:16px;right:16px}.lb .prev{left:16px;top:50%}.lb .next{right:16px;top:50%}
+  footer{margin-top:40px;color:var(--muted);font-size:13px;text-align:center}
+  footer a{color:var(--teal)}
+  @media (max-width:640px){ .lb .prev,.lb .next{top:auto;bottom:16px} }
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">LIVE WEATHER · RISK GIS · INDIA</div>
+    <h1>CLIMO <span>Gallery</span></h1>
+    <p class="sub">Every screen of the all-India weather and risk GIS, captured from the real app running against live Open-Meteo data. Click any tile to enlarge it, and use ← → to browse. <a href="../README.md">Back to the README</a>.</p>
+  </header>
+
+  <div class="hero"><img src="assets/banner.svg" alt="CLIMO — Know the sky, Own the day." /></div>
+
+  <div class="chips" role="toolbar" aria-label="Filter gallery">
+    <button class="chip" data-f="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="intro" aria-pressed="false">First look</button>
+    <button class="chip" data-f="map" aria-pressed="false">Map</button>
+    <button class="chip" data-f="layers" aria-pressed="false">Weather layers</button>
+    <button class="chip" data-f="analysis" aria-pressed="false">Analysis</button>
+    <button class="chip" data-f="ai" aria-pressed="false">Assistant &amp; alerts</button>
+    <button class="chip" data-f="mobile" aria-pressed="false">Mobile</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>Weather © Open-Meteo (CC BY 4.0) · Map data © OpenStreetMap contributors · Imagery © Esri · <a href="GALLERY.md">Markdown version</a></footer>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="x" id="lbX" aria-label="Close">✕</button>
+  <button class="prev" id="lbP" aria-label="Previous">←</button>
+  <figure><img id="lbImg" alt=""/><figcaption id="lbCap"></figcaption></figure>
+  <button class="next" id="lbN" aria-label="Next">→</button>
+</div>
+
+<script>
+const G = 'assets/gallery/';
+const SHOTS = [
+  ['climate-timelapse-2000-2030.gif','layers','2000 → 2030 timelapse','Observed station climate rolls into the LSTM forecast from 2026.'],
+  ['landing-hero.jpg','intro','Landing hero','A 3D India with live city pins, flowing data lines and an orbiting sun.'],
+  ['splash.jpg','intro','Splash','Animated logo with a starfield. It auto-advances, or you can tap to skip.'],
+  ['landing-features.jpg','intro','Feature grid','Cards that tilt in 3D, each for one thing CLIMO tracks.'],
+  ['dashboard-stations.jpg','map','Station network','90 clustered stations coloured by type, plus a ranked list of top alerts.'],
+  ['station-drawer.jpg','map','Search → fly → open','Searching “Mumbai” zooms to Colaba and opens its station drawer.'],
+  ['detail-station-drawer.jpg','map','Station drawer','Hourly strip, 7-day outlook, core readings and a flood-risk gauge.'],
+  ['satellite-basemap.jpg','map','Satellite basemap','Switch between OSM and Esri World Imagery in one tap.'],
+  ['choropleth-temperature.jpg','layers','State choropleth: temperature','Every state and UT from one batched API call. Everything outside India is masked.'],
+  ['choropleth-rainfall.jpg','layers','State choropleth: rainfall','24 h rainfall with animated canvas rain particles.'],
+  ['live-heatmap.jpg','layers','Live heatmap','A Leaflet.heat surface built from current station readings.'],
+  ['climate-forecast-2030.jpg','layers','Climate slider: 2030','The Weather Time Explorer drives the year-based heatmap.'],
+  ['buffer-analysis.jpg','analysis','Buffer analysis','5 / 10 / 15 / 20 km rings around any place you search.'],
+  ['detail-buffer-insights.jpg','analysis','Buffer insights','Live risk for the place, and which stations each ring overlaps.'],
+  ['weather-buddy.jpg','ai','Weather Buddy','Ask a question and the map flies to the place you asked about.'],
+  ['detail-weather-buddy.jpg','ai','Weather Buddy: answer','A plain-language forecast with a recommendation.'],
+  ['alert-notifications.jpg','ai','Alert notification','Set a threshold, allow browser alerts and simulate a high-risk event.'],
+  ['language-menu.jpg','ai','16 languages','Each language is listed in its own script.'],
+  ['multilingual-hindi.jpg','ai','हिन्दी UI','The whole interface switches instantly and remembers your choice.'],
+  ['mobile-landing.jpg','mobile','Mobile: landing','The responsive landing page on an iPhone 14 Pro.'],
+  ['mobile-map.jpg','mobile','Mobile: map','The full dashboard in a phone viewport.'],
+  ['mobile-layers.jpg','mobile','Mobile: layers sheet','The ☰ button opens the sidebar as a sheet.'],
+];
+const TAG = {intro:'First look',map:'Map',layers:'Layers',analysis:'Analysis',ai:'Assistant',mobile:'Mobile'};
+const grid = document.getElementById('grid');
+SHOTS.forEach(([f,cat,title,desc],i) => {
+  const el = document.createElement('figure');
+  el.className = 'tile'; el.tabIndex = 0; el.dataset.cat = cat; el.dataset.i = i;
+  el.style.animationDelay = (i*40)+'ms';
+  el.innerHTML = `<span class="tag">${TAG[cat]}</span><img loading="lazy" src="${G+f}" alt="${title}"><figcaption class="cap"><b>${title}</b><small>${desc}</small></figcaption>`;
+  el.addEventListener('click', () => open(i));
+  el.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(i);} });
+  grid.appendChild(el);
+});
+let filter = 'all';
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  filter = c.dataset.f;
+  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x===c)));
+  grid.querySelectorAll('.tile').forEach(t => t.classList.toggle('hidden', filter!=='all' && t.dataset.cat!==filter));
+}));
+const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
+let cur = 0;
+const visible = () => SHOTS.map((s,i)=>i).filter(i => filter==='all' || SHOTS[i][1]===filter);
+function open(i){ cur=i; const [f,,t,d]=SHOTS[i]; lbImg.src=G+f; lbImg.alt=t; lbCap.innerHTML=`<b>${t}</b> · ${d}`; lb.classList.add('open'); document.getElementById('lbX').focus(); }
+function close(){ lb.classList.remove('open'); const t=grid.querySelector(`[data-i="${cur}"]`); if(t) t.focus(); }
+function step(n){ const v=visible(); const k=v.indexOf(cur); open(v[(k+n+v.length)%v.length]); }
+document.getElementById('lbX').onclick = close;
+document.getElementById('lbP').onclick = () => step(-1);
+document.getElementById('lbN').onclick = () => step(1);
+lb.addEventListener('click', e => { if(e.target===lb) close(); });
+document.addEventListener('keydown', e => {
+  if(!lb.classList.contains('open')) return;
+  if(e.key==='Escape') close(); else if(e.key==='ArrowRight') step(1); else if(e.key==='ArrowLeft') step(-1);
+});
+</script>
+</body>
+</html>
