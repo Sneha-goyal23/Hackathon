@@ -1,0 +1,44 @@
+name: 🐞 Bug report
+description: Something on the map, a layer, or the Android app isn't working
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for helping make CLIMO better! Please don't include phone numbers or exact home locations."
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Splash / landing page
+        - Stations & station drawer
+        - Risk heatmap / climate slider
+        - Buffer analysis
+        - Live weather (state level)
+        - Weather-safe route
+        - Alert notification
+        - Weather Buddy
+        - Search / My Location / Export
+        - Languages (i18n)
+        - Android app (APK)
+        - Other
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what you saw instead.
+      placeholder: "1. Turned on Buffer Analysis\n2. Searched 'Kochi'\n3. No rings appeared"
+    validations: { required: true }
+  - type: input
+    id: env
+    attributes:
+      label: Browser / device
+      placeholder: "Chrome 131 on Windows · Android 14 WebView (APK) · Safari iOS 18"
+    validations: { required: true }
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors or screenshots
+      description: DevTools → Console. Paste errors or drop a screenshot.
+      render: text

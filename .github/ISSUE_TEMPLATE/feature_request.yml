@@ -1,0 +1,21 @@
+name: ✨ Feature request
+description: Suggest a new layer, data source, language, or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      placeholder: "As a commuter in Chennai during monsoon, I want…"
+    validations: { required: true }
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed solution
+      description: How it could work in CLIMO. Mockups welcome!
+    validations: { required: true }
+  - type: textarea
+    id: data
+    attributes:
+      label: Data source / API (if any)
+      description: Is it free, CORS-enabled, and keyless? Link its terms.

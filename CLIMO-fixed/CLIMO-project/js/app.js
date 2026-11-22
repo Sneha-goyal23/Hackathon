@@ -806,7 +806,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
     if(arr.length!==weatherAreaLayers.length) throw new Error(`Open-Meteo returned ${arr.length} state locations for ${weatherAreaLayers.length} boundaries`);
     arr.forEach((d,i)=>{
       const h=d.hourly||{};
-      const rain=Array.isArray(h.precipitation)?h.precipitation.slice(-24).reduce((a,b)=>a+(Number(b)||0),0):Number(d.current?.precipitation)||0;
+      const rain=Array.isArray(h.precipitation)?sumWindow(h.precipitation,currentHourIndex(h.time,d.current),24):Number(d.current?.precipitation)||0; // trailing 24h up to now, not the rest of today's forecast
       stateLiveWeather.set(normalizeStateName(weatherAreaLayers[i].name),{
         temperature:num(d.current?.temperature_2m), humidity:num(d.current?.relative_humidity_2m),
         wind:num(d.current?.wind_speed_10m), rainfall24h:rain,
@@ -1312,20 +1312,67 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
    *   10% current precipitation intensity
    *   15% today's precipitation probability
    *    5% thunderstorm signal
+   *
+   * The hourly series spans past AND forecast hours (e.g. past_days=2 +
+   * forecast_days=10), so the "trailing" windows must end at the current
+   * hour — NOT at the end of the array, which would be ~10 days in the
+   * future. Likewise daily[0] is the first PAST day, not today.
    */
-  function computeRisk(hourlyRain, current = {}, daily = {}){
+
+  // Index of the most recent hourly step that is not in the future.
+  // Prefers Open-Meteo's own `current.time`: it is returned in the same
+  // timezone as `hourly.time` (IST, or `timezone=auto` local time), so a plain
+  // ISO string comparison is exact with no timezone conversion. Falls back to
+  // the IST wall clock only if the response has no `current.time`.
+  function currentHourIndex(hourlyTimes, current){
+    if(!Array.isArray(hourlyTimes) || !hourlyTimes.length) return -1;
+    const ref = current && typeof current.time === 'string' ? current.time : null;
+    if(ref){
+      let idx = -1;
+      for(let i = 0; i < hourlyTimes.length; i++){
+        if(hourlyTimes[i] <= ref) idx = i; else break;
+      }
+      return idx;
+    }
+    const now = Date.now();
+    let idx = -1;
+    for(let i = 0; i < hourlyTimes.length; i++){
+      if(parseIST(hourlyTimes[i]).getTime() <= now) idx = i; else break;
+    }
+    return idx;
+  }
+
+  // Sum of the `hours` hourly values ending at (and including) `endIdx`.
+  function sumWindow(values, endIdx, hours){
+    if(!Array.isArray(values) || endIdx < 0) return 0;
+    return values.slice(Math.max(0, endIdx - hours + 1), endIdx + 1)
+      .reduce((a,b) => a + (Number(b) || 0), 0);
+  }
+
+  function computeRisk(hourlyRain, current = {}, daily = {}, hourlyTimes = null){
+    current = current || {};
+    daily = daily || {};
     const rain = Array.isArray(hourlyRain) ? hourlyRain : [];
-    const recent24 = rain.slice(Math.max(0, rain.length - 24));
-    const recent6  = rain.slice(Math.max(0, rain.length - 6));
-    const rainfall24h = recent24.reduce((a,b) => a + (Number(b) || 0), 0);
-    const rainfall6h  = recent6.reduce((a,b) => a + (Number(b) || 0), 0);
+    let nowIdx = currentHourIndex(hourlyTimes, current);
+    // No usable timestamps at all: last resort is the old tail behaviour.
+    if(nowIdx < 0 && !(Array.isArray(hourlyTimes) && hourlyTimes.length)) nowIdx = rain.length - 1;
+    const rainfall24h = sumWindow(rain, nowIdx, 24);
+    const rainfall6h  = sumWindow(rain, nowIdx, 6);
 
     const rain24Norm = Math.min(rainfall24h / 75, 1);
     const rain6Norm  = Math.min(rainfall6h / 35, 1);
     const currentNorm = Math.min((Number(current.precipitation) || 0) / 8, 1);
 
-    const probRaw = Array.isArray(daily.precipitation_probability_max)
-      ? Number(daily.precipitation_probability_max[0] ?? daily.precipitation_probability_max[1] ?? 0)
+    // Today's entry in the daily series (daily[0] is a PAST day when past_days > 0).
+    let todayDailyIdx = -1;
+    if(Array.isArray(daily.time)){
+      const todayStr = (typeof current.time === 'string' && current.time.slice(0, 10))
+        || (Array.isArray(hourlyTimes) && nowIdx >= 0 && String(hourlyTimes[nowIdx]).slice(0, 10))
+        || new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
+      todayDailyIdx = daily.time.indexOf(todayStr);
+    }
+    const probRaw = (Array.isArray(daily.precipitation_probability_max) && todayDailyIdx >= 0)
+      ? Number(daily.precipitation_probability_max[todayDailyIdx] ?? 0)
       : 0;
     const probabilityNorm = Math.min(probRaw / 80, 1);
 
@@ -1371,7 +1418,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
   let nowIndexGlobal = null; // the timeline index that represents "right now" — alerts fire off this, not off wherever the scrubber happens to be
 
   function renderStation(station, data){
-    const risk = computeRisk(data.hourlyRain, data.current, data.daily);
+    const risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
     station.data = data;
     station.risk = risk;
 
@@ -1600,7 +1647,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
             else{
               fetchStationData(target).then(data => {
                 target.data = data;
-                target.risk = computeRisk(data.hourlyRain, data.current, data.daily);
+                target.risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
                 openDrawer(target);
               });
             }
@@ -2166,7 +2213,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
     setBufferLocStatus('Fetching live weather for ' + (point.label || 'this location') + '…');
     try{
       const data = await fetchStationData({lat: point.lat, lon: point.lon});
-      const risk = computeRisk(data.hourlyRain, data.current, data.daily);
+      const risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
       lastCustomLocation = {point, data, risk};
       drawCustomLocationBuffers(point, risk);
       openLocationBufferInsights(point, data, risk);
@@ -2447,7 +2494,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
       const data = await fetchStationData(pointStation);
       if(requestId !== clickWeatherRequestId) return;
       pointStation.data = data;
-      pointStation.risk = computeRisk(data.hourlyRain, data.current, data.daily);
+      pointStation.risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
       pointStation._liveScore = pointStation.risk.score;
       pointStation._liveTemp = data.current.temperature_2m;
       pointStation._liveRain = data.current.precipitation;
@@ -2550,7 +2597,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
     if(!samples.length) return [];
     const lats = samples.map(s => s.lat).join(',');
     const lons = samples.map(s => s.lon).join(',');
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&hourly=precipitation&past_days=1&forecast_days=1&timezone=UTC`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=precipitation&hourly=precipitation&past_days=1&forecast_days=1&timezone=Asia%2FKolkata`;
     try{
       const res = await fetch(url);
       if(!res.ok) return [];
@@ -2558,8 +2605,8 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
       const list = Array.isArray(data) ? data : [data]; // single-point requests return an object, not an array
       return list.map((d, i) => {
         const rain = (d.hourly && d.hourly.precipitation) || [];
-        const recent = rain.slice(Math.max(0, rain.length - 24));
-        const sum = recent.reduce((a,b) => a + (Number(b) || 0), 0);
+        // trailing 24h ending at the current hour (the series also holds the rest of today's forecast)
+        const sum = sumWindow(rain, currentHourIndex(d.hourly && d.hourly.time, d.current), 24);
         return { lat: samples[i].lat, lon: samples[i].lon, score: Math.min(Math.round((sum/75)*100), 100), rainfall24h: Math.round(sum*10)/10 };
       });
     }catch(err){ return []; }
@@ -2917,7 +2964,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
     try{
       const data = await fetchStationData(place);
       place.data = data;
-      place.risk = computeRisk(data.hourlyRain, data.current, data.daily);
+      place.risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
       place._liveScore = place.risk.score;
       place._liveTemp = data.current.temperature_2m;
       place._liveRain = data.current.precipitation;
@@ -3081,7 +3128,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
     try{
       const data = await fetchStationData(meStation);
       meStation.data = data;
-      meStation.risk = computeRisk(data.hourlyRain, data.current, data.daily);
+      meStation.risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
       meStation._liveScore = meStation.risk.score;
       meStation._liveTemp = data.current.temperature_2m;
       meStation._liveRain = data.current.precipitation;
@@ -3350,7 +3397,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
   }
 
   function formatPlaceWeather(label, data){
-    const risk = computeRisk(data.hourlyRain, data.current, data.daily);
+    const risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
     const [desc, icon] = wmoInfo(data.current.weathercode);
     const maxArr = data.daily.temperature_2m_max || [];
     const minArr = data.daily.temperature_2m_min || [];
@@ -3560,7 +3607,7 @@ const WEATHER_DATA = [{"Station_ID":42026,"Station_Name":"Leh","Latitude":34.152
         try{
           const data = await fetchStationData(s);
           s.data = data;
-          s.risk = computeRisk(data.hourlyRain, data.current, data.daily);
+          s.risk = computeRisk(data.hourlyRain, data.current, data.daily, data.hourlyTimes);
           s._liveScore = s.risk.score;
           s._liveTemp = data.current.temperature_2m;
           s._liveRain = data.current.precipitation;
